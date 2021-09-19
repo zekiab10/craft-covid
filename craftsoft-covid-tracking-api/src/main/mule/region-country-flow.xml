@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<flow name="region-country-flowFlow" doc:id="360b7cb0-ca09-47fc-bc60-3811fa52c02f" >
+		<ee:transform doc:name="Covid-info" doc:id="ed295af9-adc0-4682-90da-4dea56979acb" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+vars.vCovidOutput]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="vEmpty" ><![CDATA[%dw 2.0
+output application/json
+---
+[]]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<foreach doc:name="For Each" doc:id="58b576d3-7c4f-4b3c-8144-d1a7dbc335d1" >
+			<set-variable value="#[payload.Code]" doc:name="Set Variable" doc:id="a3500504-d392-4b06-942c-ad9093e334a7" variableName="vCountryCode "/>
+			<http:request method="GET" doc:name="Region/Country" doc:id="9208a0ec-4252-49ab-9bc6-f6c8ac2341c7" config-ref="HTTP_Request_configuration" url="https://api.first.org/data/v1/countries" />
+			<ee:transform doc:name="Filtered-Region-Outputs" doc:id="8907dc57-f803-4548-809a-81675991d210">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+
+var countryCode= vars.vCountryCode
+
+var data = payload.data mapObject(value, key, index) -> (
+			if((key) as String == countryCode as String) {
+				(key):(value)
+	}
+			else{
+				
+			}
+	)
+
+var region = data mapObject{
+	region:$.region
+}
+---
+region
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+			<ee:transform doc:name="Aggrigated-Region-Info" doc:id="fc312a9a-9498-4a03-b474-799eb2154304" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="vEmpty" ><![CDATA[%dw 2.0
+output application/json
+---
+vars.vEmpty + payload]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<logger level="INFO" doc:name="Logger" doc:id="9626d003-4900-4e51-bee2-50d5a17959de" message="#[vars.vEmpty]"/>
+		</foreach>
+		<ee:transform doc:name="Extracting-Agg-Outputs" doc:id="c71fae4b-52ee-4e68-bba0-9eab9560dc23" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+vars.vEmpty]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

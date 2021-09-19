@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<flow name="exchange-rate-flowFlow" doc:id="39e9ea95-9caf-45b3-b1e1-d21f6738d8a9" >
+		<ee:transform doc:name="Covid-Info-Storage" doc:id="4a8c56e4-f94d-44a3-87de-58bd05837d19" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+vars.vCovidOutput]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="vEmpty" ><![CDATA[%dw 2.0
+output application/json
+---
+[]]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<foreach doc:name="For Each" doc:id="55c322f9-d1eb-4be4-9add-eefc536eaaf8" >
+			<set-variable value="#[payload.Code]" doc:name="Set Variable" doc:id="a5f71f90-7b13-4d88-ba72-25d0981cdb17" variableName="vCountryCode"/>
+			<http:request method="GET" doc:name="Request" doc:id="9c003a3d-cc82-44b2-bd16-d6422e7d048b" config-ref="HTTP_Request_configuration" url="https://v6.exchangerate-api.com/v6/1f905d39a2c0ca4d07fcc831/latest/USD"/>
+			<ee:transform doc:name="Exchange-Rate-Filter" doc:id="e298345d-cf1f-450b-aad0-57fc6f1bddab">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+var countryCode= vars.vCountryCode
+
+var data = payload.conversion_rates mapObject(value, key, index) -> (
+			if((key) startsWith (countryCode) as String ) {
+				(key):(value)
+			}
+			else{
+				
+			} )
+			
+var exchange = data mapObject(item, key, index) -> {
+				currencyName:(key),
+				"currencyEx-Rate":(item)
+				}			
+---
+exchange
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+			<ee:transform doc:name="Output storage" doc:id="e129e825-9c10-43a7-9e78-d79d79a4052a" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="vEmpty" ><![CDATA[%dw 2.0
+output application/json
+---
+vars.vEmpty + payload]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<logger level="INFO" doc:name="Logger" doc:id="9101478d-4286-4eaf-9a6f-45dba6ac3db1" message="#[vars.vEmpty]"/>
+		</foreach>
+		<ee:transform doc:name="Extracting-Output" doc:id="4f6d35a9-fae5-4bc9-9c15-3dbab44fa117" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+vars.vEmpty]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

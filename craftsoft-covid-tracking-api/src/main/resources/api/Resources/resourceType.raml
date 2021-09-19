@@ -1,0 +1,28 @@
+#%RAML 1.0 ResourceType
+ get:
+  description: Retrieve covid data from <<resourcePathName | !singularize>> API
+  displayName: Get TOP 4 latest covid information  from <<resourcePathName | !singularize>> API
+  responses:
+    200:
+      body:
+        application/json:
+          type: DataType
+          
+    400:
+      body:
+        application/json:
+          type: ErrorMsgDataType
+          examples: !include ..//Examples/400ErrorMsgExample.raml
+         
+    401:
+      body:
+        application/json:
+          type: ErrorMsgDataType
+          examples: !include ..//Examples/401ErrorMsgExample.raml
+           
+    500:
+      body:
+        application/json:
+          type: ErrorMsgDataType
+          examples: !include ..//Examples/500ErrorMsgExample.raml
+           

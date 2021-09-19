@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<flow name="openweather-flowFlow" doc:id="3034d31d-af72-4d06-87e0-a22cd82bb76c" >
+		<ee:transform doc:name="Covid-Info" doc:id="3d2392ab-2c04-426d-b1e7-5a6e5d809111" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+vars.vCovidOutput]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="vEmpty" ><![CDATA[%dw 2.0
+output application/json
+---
+[]]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<foreach doc:name="For Each" doc:id="9fcc8398-277c-4764-8c24-4693df5752a6" >
+			<ee:transform doc:name="Lat &amp; Lon variable Storage" doc:id="5e16130e-4216-45f5-a075-a5f024b394e5" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="vLat" ><![CDATA[%dw 2.0
+output application/json
+---
+payload.Lat]]></ee:set-variable>
+					<ee:set-variable variableName="vLon" ><![CDATA[%dw 2.0
+output application/json
+---
+payload.Lon]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<http:request method="GET" doc:name="Open-Weather" doc:id="90a7614c-57b6-431a-aaa1-ecefeb921cdf" config-ref="HTTP_Request_configuration" url="http://api.openweathermap.org:80/data/2.5/forecast">
+				<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"appid" : "1a2750d1e466586a59844b44ae45f3f7",
+	"lat" : vars.vLat,
+	"lon" : vars.vLon
+}]]]></http:query-params>
+			</http:request>
+			<ee:transform doc:name="Filtered-weather-Info" doc:id="74408eb2-6799-46cc-92db-f8645ca8c839">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+
+var data = {
+ 	minTemp:payload.list.main.temp_min filter ((item, index) -> (index<=4)),
+	maxTemp:payload.list.main.temp_max filter ((item, index) -> (index<=4))  
+   }
+   
+var minmax = data mapObject(item, key, index) -> {
+				(key):(item)
+			}
+---
+minmax]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+			<ee:transform doc:name="Aggrigated Outputs" doc:id="ae299c95-7c52-4205-a118-f850f9a02cd7" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="vEmpty" ><![CDATA[%dw 2.0
+output application/json
+---
+vars.vEmpty + payload]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<logger level="INFO" doc:name="Logger" doc:id="4ae98599-d896-4d5e-a8f4-037e4c4829fa" message="#[vars.vEmpty]"/>
+		</foreach>
+		<ee:transform doc:name="Extracting-Agg-Output" doc:id="1fd6264f-8b5b-4c9e-be8e-ca0bd137c686" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+vars.vEmpty]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

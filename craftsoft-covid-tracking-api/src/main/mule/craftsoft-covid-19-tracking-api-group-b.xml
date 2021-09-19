@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+    <apikit:config name="craftsoft-covid-19-tracking-api-group-b-config" api="craftsoft-covid-19-tracking-api-group-b.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <flow name="craftsoft-covid-19-tracking-api-group-b-main">
+        <http:listener config-ref="HTTP_Listener_config" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatusCode default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="craftsoft-covid-19-tracking-api-group-b-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:BAD_REQUEST">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Bad request"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">400</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Method not allowed"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not acceptable"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Unsupported media type"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not Implemented"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="craftsoft-covid-19-tracking-api-group-b-console">
+        <http:listener config-ref="HTTP_Listener_config" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="craftsoft-covid-19-tracking-api-group-b-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="get:\covid-tracking:craftsoft-covid-19-tracking-api-group-b-config">
+		<http:request method="GET" doc:name="Request" doc:id="801294ca-655f-42a4-934e-0f39dc47590f" config-ref="HTTP_Request_configuration" url="http://corona-api.com/countries" />
+		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:name="Filtered-covid-info">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+
+var filteredCovidInfo= (payload.data map{
+    						country:$.name,
+    						Code:$.code,
+   							Lat:$.coordinates.latitude,
+   							Lon:$.coordinates.longitude,
+   							Population:$.population,
+   							Deaths:$.latest_data.deaths,
+   							Confirmed:$.latest_data.confirmed,
+   							Recovered:$.latest_data.recovered,
+   							Critical:$.latest_data.critical
+							}) orderBy -($.Deaths)
+							
+var HighCovidCountries = (filteredCovidInfo map(value, index) -> {
+								data:(value)
+							 }) filter(item, index) ->(index <= 3)						
+
+var data = HighCovidCountries.data
+
+
+---
+data]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+		<ee:transform doc:name="Accumulator" doc:id="ab2c8c90-ec11-4723-a9df-dfd47930afa3" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="vCovidOutput" ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<scatter-gather doc:name="Scatter-Gather" doc:id="f073f471-20be-4cb8-8e3f-c4165135a6c7" >
+			<route >
+				<flow-ref doc:name="Region/Country" doc:id="4db7a053-86eb-4706-b294-1755002e76fd" name="region-country-flowFlow"/>
+			</route>
+			<route >
+				<flow-ref doc:name="Exchange-Rate" doc:id="a4599579-795a-4697-87cd-8da935f9ec97" name="exchange-rate-flowFlow"/>
+			</route>
+			<route >
+				<flow-ref doc:name="Open-Weather" doc:id="08a347f3-43b4-4f90-9e98-37f07927bfc7" name="openweather-flowFlow"/>
+			</route>
+		</scatter-gather>
+		<ee:transform doc:name="Region/Exchange/OpenWeather" doc:id="057d191d-ef24-4186-af15-229931b1dacd" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+flatten(payload..payload)
+  ]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="CraftSoft-Tracked-Covid-Info" doc:id="75be688a-539e-4184-9839-7f33210f9f1b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+
+var firstTopAggResult = {
+						region:payload[0].region,
+						currency:payload[4].currencyName,
+						"ex-Rate":payload[4]."currencyEx-Rate",
+						minTemp:payload[8].minTemp,
+						maxTemp:payload[8].maxTemp 	 
+					}
+					
+var secondTopAggResult = {
+						region:payload[0+1].region,
+						currency:payload[4+1].currencyName,
+						"ex-Rate":payload[4+1]."currencyEx-Rate",
+						minTemp:payload[8+1].minTemp,
+						maxTemp:payload[8+1].maxTemp 	 
+					}
+					
+var thirdTopAggResult = {
+						region:payload[0+2].region,
+						currency:payload[4+2].currencyName,
+						"ex-Rate":payload[4+2]."currencyEx-Rate",
+						minTemp:payload[8+2].minTemp,
+						maxTemp:payload[8+2].maxTemp 	 
+					}
+					
+var forthTopAggResult = {
+						region:payload[0+3].region,
+						currency:payload[4+3].currencyName,
+						"ex-Rate":payload[4+3]."currencyEx-Rate",
+						minTemp:payload[8+3].minTemp,
+						maxTemp:payload[8+3].maxTemp 	 
+					}
+					
+var payload1 = vars.vCovidOutput	
+			
+var firstTopCovid = payload1[0]
+var secondTopCovid = payload1[1]
+var thirdTopCovid = payload1[2]
+var forthTopCovid = payload1[3]
+
+var first = [firstTopCovid]	+ [firstTopAggResult]
+var second = [secondTopCovid] + [secondTopAggResult]
+var third = [thirdTopCovid]	+ [thirdTopAggResult]
+var forth = [forthTopCovid]	+ [forthTopAggResult]			
+					
+---
+first + second + third + forth
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+    </flow>
+</mule>

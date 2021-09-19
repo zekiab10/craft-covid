@@ -1,0 +1,134 @@
+[
+    {
+        "country": "USA",
+        "Code": "US",
+        "Lat": 38,
+        "Lon": -97,
+        "Population": 310232863,
+        "Deaths": 562292,
+        "Confirmed": 30952766,
+        "Recovered": 23402363,
+        "Critical": 6988111
+    },
+    {
+        "country": "Brazil",
+        "Code": "BR",
+        "Lat": -10,
+        "Lon": -55,
+        "Population": 201103330,
+        "Deaths": 310694,
+        "Confirmed": 12490362,
+        "Recovered": 10879627,
+        "Critical": 1300041
+    },
+    {
+        "country": "Mexico",
+        "Code": "MX",
+        "Lat": 23,
+        "Lon": -102,
+        "Population": 112468855,
+        "Deaths": 201429,
+        "Confirmed": 2224767,
+        "Recovered": 1759123,
+        "Critical": 264215
+    },
+    {
+        "country": "India",
+        "Code": "IN",
+        "Lat": 20,
+        "Lon": 77,
+        "Population": 1173108018,
+        "Deaths": 161881,
+        "Confirmed": 12039210,
+        "Recovered": 11353718,
+        "Critical": 523611
+    },
+    [
+        {},
+        {},
+        {},
+        {
+            "region": "Asia"
+        },
+        {
+            "currencyName": "USD",
+            "currencyEx-Rate": 1
+        },
+        {
+            "currencyName": "BRL",
+            "currencyEx-Rate": 5.6817
+        },
+        {
+            "currencyName": "MXN",
+            "currencyEx-Rate": 20.6223
+        },
+        {
+            "currencyName": "INR",
+            "currencyEx-Rate": 72.6593
+        },
+        {
+            "minTemp": [
+                287.95,
+                283.23,
+                282.96,
+                282.16,
+                281.73
+            ],
+            "maxTemp": [
+                289.26,
+                284.8,
+                283.44,
+                282.23,
+                281.73
+            ]
+        },
+        {
+            "minTemp": [
+                296.5,
+                295.22,
+                294.32,
+                293.51,
+                296.88
+            ],
+            "maxTemp": [
+                297.68,
+                296,
+                294.61,
+                293.55,
+                296.88
+            ]
+        },
+        {
+            "minTemp": [
+                295.77,
+                287.42,
+                286.38,
+                286.27,
+                285.24
+            ],
+            "maxTemp": [
+                296.74,
+                289.63,
+                287.1,
+                286.36,
+                285.24
+            ]
+        },
+        {
+            "minTemp": [
+                300.95,
+                304.82,
+                309.25,
+                311.45,
+                311.09
+            ],
+            "maxTemp": [
+                301.65,
+                305.51,
+                309.72,
+                311.52,
+                311.09
+            ]
+        }
+    ]
+]

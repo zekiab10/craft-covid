@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="sample" format="json">
+      <types:shape format="weave" example="examples/Scatter.json"><![CDATA[%dw 2.0
+
+type sample = Array<{|  region: String,   currencyName: String,   "currencyEx-Rate": Number {"typeId": "int"},   minTemp: Array<Number {"typeId": "double"}>, 
+  maxTemp: Array<Number {"typeId": "double"}>
+|}> {"example": "[{},{},{},{\\\"region\\\":\\\"Asia\\\"},{\\\"currencyName\\\":\\\"USD\\\",\\\"currencyEx-Rate\\\":1},{\\\"currencyName\\\":\\\"BRL\\\",\\\"currencyEx-Rate\\\":5.6817},{\\\"currencyName\\\":\\\"MXN\\\",\\\"currencyEx-Rate\\\":20.6223},{\\\"currencyName\\\":\\\"INR\\\",\\\"currencyEx-Rate\\\":72.6593},{\\\"minTemp\\\":[287.95,283.23,282.96,282.16,281.73],\\\"maxTemp\\\":[289.26,284.8,283.44,282.23,281.73]},{\\\"minTemp\\\":[296.5,295.22,294.32,293.51,296.88],\\\"maxTemp\\\":[297.68,296,294.61,293.55,296.88]},{\\\"minTemp\\\":[295.77,287.42,286.38,286.27,285.24],\\\"maxTemp\\\":[296.74,289.63,287.1,286.36,285.24]},{\\\"minTemp\\\":[300.95,304.82,309.25,311.45,311.09],\\\"maxTemp\\\":[301.65,305.51,309.72,311.52,311.09]}]"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#75be688a-539e-4184-9839-7f33210f9f1b">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="sample"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

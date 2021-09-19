@@ -1,0 +1,38 @@
+#%RAML 1.0
+title: Covid-19 tracking API-Group-B
+version: 1.0.0
+mediaType: [Application/json]
+protocols: [HTTP, HTTPS]
+
+documentation: 
+  - !include /Documentation/documentation.raml
+uses:
+  Library: library.raml
+
+securitySchemes:
+  SecurityScheme: !include security-scheme/securityScheme.raml
+  
+securedBy:
+  - SecurityScheme
+
+/covid-tracking:
+  is: Library.ErrorResponce
+  type: Library.Collection  
+  get:
+    queryParameters:
+      lat?:
+        type: number
+        required: false
+        example: 39.004
+      lon?:
+        type: number
+        required: false
+        example: -77.79
+      appid?:
+        type: string
+        required: false
+        example: "1a2750d1e466586a59844b44ae45f3f7"
+          
+
+
+      

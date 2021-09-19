@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="cd25cedb-37c6-4faf-8a0a-05469264986e" >
+		<http:listener-connection host="0.0.0.0" port="${secure::http.port}" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="855d3b66-3b24-4c2b-8789-1e96d662c7dd" />
+	<configuration doc:name="Configuration" doc:id="90db5a50-e035-47e0-9b06-9aae17a4441f" defaultErrorHandler-ref="globalErrorHandlerError_Handler" />
+	<global-property doc:name="Global Property" doc:id="481c31d7-6029-48db-8f37-e11f9f8728d0" name="secure-key" value="groupBProject" />
+	<global-property doc:name="Global Property" doc:id="79147bd9-3924-4a0c-ae2a-4f3169b71b77" name="mule.env" value="dev" />
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="c1a7f3ad-7e10-4fa7-8907-da1669b871b4" file="secure-${mule.env}-config.properties" key="${secure-key}" >
+		<secure-properties:encrypt algorithm="Blowfish" />
+	</secure-properties:config>
+	<flow name="global-flowFlow" doc:id="6fefea77-b43e-4b49-9165-5b6d1e92402a" >
+		<logger level="INFO" doc:name="Logger" doc:id="ce499092-3b27-4552-8c5f-43c1c2e29810" />
+	</flow>
+</mule>
